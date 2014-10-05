@@ -35,12 +35,20 @@ class CreatePerformanceListener implements ContainerAwareInterface
 
         $this->calendarRepository = $this->container->get('doctrine.orm.entity_manager')->getRepository('OroCalendarBundle:Calendar');
 
-        /* @todo CHANGE THIS BEFORE GOING LIVE! */
+        $this->eventTitle = $this->performance->getName() . "\n" . $this->performance->getVenue() . "\n";
+        $bands = $this->performance->getBands();
+        $bandString = "";
+        foreach ($bands as $band) {
+            $bandString .= $band->getName() . ",";
+        }
+        $this->eventTitle .= $bandString . "\n";
+
         //$calendar = $this->calendarRepository->findByUser($performance->getOwnerId());
 
         //print_r($this->performance);print_r($this->performanceEvent);exit;
 
-        $ownerCalendar = $this->calendarRepository->findByUser(1);
+        /* @todo CHANGE THIS BEFORE GOING LIVE! */
+        $ownerCalendar = $this->calendarRepository->findByUser($this->performance->getOwnerId());
         $this->createOwnerCalendarEvent($ownerCalendar);
 
         $bandCalendar = $this->calendarRepository->findByUser(10);
@@ -62,7 +70,7 @@ class CreatePerformanceListener implements ContainerAwareInterface
 
         $calendarEvent->setAllDay(1);
         $calendarEvent->setStart($this->performance->getPerformanceDate());
-        $calendarEvent->setTitle($this->performance->getName());
+        $calendarEvent->setTitle($this->eventTitle);
         $calendarEvent->setCalendar($calendar);
         $calendarEvent->setEnd($this->performance->getPerformanceDate()->modify('+1 day'));
         //print_r($calendarEvent);exit;
@@ -75,7 +83,7 @@ class CreatePerformanceListener implements ContainerAwareInterface
 
         $calendarEvent->setAllDay(1);
         $calendarEvent->setStart($this->performance->getPerformanceDate());
-        $calendarEvent->setTitle($this->performance->getName());
+        $calendarEvent->setTitle($this->eventTitle);
         $calendarEvent->setCalendar($calendar);
         $calendarEvent->setEnd($this->performance->getPerformanceDate()->modify('+1 day'));
         $this->performanceEvent->addCalendarEvent($calendarEvent);
@@ -87,7 +95,7 @@ class CreatePerformanceListener implements ContainerAwareInterface
 
         $calendarEvent->setAllDay(1);
         $calendarEvent->setStart($this->performance->getPerformanceDate());
-        $calendarEvent->setTitle($this->performance->getName());
+        $calendarEvent->setTitle($this->eventTitle);
         $calendarEvent->setCalendar($calendar);
         $calendarEvent->setEnd($this->performance->getPerformanceDate()->modify('+1 day'));
         $this->performanceEvent->addCalendarEvent($calendarEvent);
@@ -99,7 +107,7 @@ class CreatePerformanceListener implements ContainerAwareInterface
 
         $calendarEvent->setAllDay(1);
         $calendarEvent->setStart($this->performance->getPerformanceDate());
-        $calendarEvent->setTitle($this->performance->getName());
+        $calendarEvent->setTitle($this->eventTitle);
         $calendarEvent->setCalendar($calendar);
         $calendarEvent->setEnd($this->performance->getPerformanceDate()->modify('+1 day'));
         $this->performanceEvent->addCalendarEvent($calendarEvent);

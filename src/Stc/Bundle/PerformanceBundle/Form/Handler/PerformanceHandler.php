@@ -123,14 +123,6 @@ class PerformanceHandler
 
         $this->tagManager->saveTagging($entity);
 
-        // create "performance created" event:
-        $event = new PerformanceEvent($entity);
-        // create listener for the event:
-        $listener = new CreatePerformanceListener();
-        $this->eventDispatcher->addListener('stc_performance.new_performance_created', array($listener, 'onPerformanceEvent'));
-        // dispatch the performance created event to add calendar events & reminders to the system:
-        $this->eventDispatcher->dispatch(PerformanceEvents::NEW_PERFORMANCE_CREATED, $event);
-
     }
 
     /**

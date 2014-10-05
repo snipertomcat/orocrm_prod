@@ -176,9 +176,15 @@ class PerformanceController extends Controller
         if ('POST' === $request->getMethod()) {
             //$form->setData($performance);
             if ($formHandler->handle($performance)) {
-                //handled in form handler:
-                //$this->getDoctrine()->getManager()->persist($performance);
-                //$this->getDoctrine()->getManager()->flush();
+
+                //dispatch the create performance event
+                $dispatcher = new EventDispatcher();
+                $event = new PerformanceEvent($performance);
+                $dispatcher->addListener('stc_performance.new_performance_created', array(
+                        $this->get('stc_performance.listener.create_performance'),
+                        'onPerformanceEvent'
+                ));
+                $dispatcher->dispatch(PerformanceEvents::NEW_PERFORMANCE_CREATED, $event);
 
                 $this->get('session')->getFlashBag()->add(
                     'success',
@@ -261,16 +267,16 @@ class PerformanceController extends Controller
      */
     public function testAction()
     {
-        $performance = $this->getDoctrine()->getRepository('StcPerformanceBundle:Performance')->find(1);
+        //@todo CHANGE BEFORE GOING LIVE!
+        $performance = $this->getDoctrine()->getRepository('StcPerformanceBundle:Performance')->find(5);
         $dispatcher = new EventDispatcher();
 
         $event = new PerformanceEvent($performance);
 
-        $eventHandler = new PerformanceEventHandler($this->getDoctrine()->getManager());
-
-        $listener = new CreatePerformanceListener($eventHandler);
-        $listener->setContainer($this->container);
-        $dispatcher->addListener('stc_performance.new_performance_created', array($listener, 'onPerformanceEvent'));
+        $dispatcher->addListener('stc_performance.new_performance_created', array(
+            $this->get('stc_performance.listener.create_performance'),
+            'onPerformanceEvent')
+        );
 
         $dispatcher->dispatch(PerformanceEvents::NEW_PERFORMANCE_CREATED, $event);
 

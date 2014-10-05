@@ -38,6 +38,8 @@ services:
         class: Stc\Bundle\PerformanceBundle\EventListener\CreatePerformanceListener
         arguments:
             - @stc_performance.event.handler
+        calls:
+            - [setContainer, ["@service_container"]]
         tags:
             - { name: doctrine.event_listener, event: stc_performance.new_performance_created }
     stc_performance.event.handler:
