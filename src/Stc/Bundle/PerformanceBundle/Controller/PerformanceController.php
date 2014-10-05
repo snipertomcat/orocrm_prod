@@ -2,6 +2,10 @@
 
 namespace Stc\Bundle\PerformanceBundle\Controller;
 
+use Stc\Bundle\PerformanceBundle\Event\Handler\PerformanceEventHandler;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Stc\Bundle\PerformanceBundle\Event\PerformanceEvent;
+use Stc\Bundle\PerformanceBundle\EventListener\CreatePerformanceListener;
 use Stc\Bundle\PerformanceBundle\Form\Handler\PerformanceHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -14,8 +18,9 @@ use Oro\Bundle\SecurityBundle\Annotation\AclAncestor;
 
 use Oro\Bundle\UserBundle\Entity\User;
 use Stc\Bundle\PerformanceBundle\Entity\Performance;
-
+use Stc\Bundle\PerformanceBundle\Event\PerformanceEvents;
 use Stc\Bundle\PerformanceBundle\Form\Type\PerformanceType;
+use Symfony\Component\HttpFoundation\Response;
 use Zend\Code\Reflection\DocBlock\TagManager;
 
 
@@ -248,6 +253,30 @@ class PerformanceController extends Controller
     {
         $view = $this->render('OroUIBundle:Default:index.html.twig');
         return $view;
+    }
+
+    /**
+     * @Route("/test", name="stc_performance_test")
+     *
+     */
+    public function testAction()
+    {
+        $performance = $this->getDoctrine()->getRepository('StcPerformanceBundle:Performance')->find(1);
+        $dispatcher = new EventDispatcher();
+
+        $event = new PerformanceEvent($performance);
+
+        $eventHandler = new PerformanceEventHandler($this->getDoctrine()->getManager());
+
+        $listener = new CreatePerformanceListener($eventHandler);
+        $listener->setContainer($this->container);
+        $dispatcher->addListener('stc_performance.new_performance_created', array($listener, 'onPerformanceEvent'));
+
+        $dispatcher->dispatch(PerformanceEvents::NEW_PERFORMANCE_CREATED, $event);
+
+        //print_r($event);exit;
+
+        return new Response();
     }
 
 }

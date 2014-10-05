@@ -1,6 +1,6 @@
 <?php
 
-namespace Stc\Bundle\StcContactBundle;
+namespace Stc\Bundle\ContactBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

@@ -4,6 +4,10 @@ namespace Stc\Bundle\PerformanceBundle\Form\Handler;
 
 use Doctrine\ORM\EntityManager;
 
+use Stc\Bundle\PerformanceBundle\Event\PerformanceEvent;
+use Stc\Bundle\PerformanceBundle\Event\PerformanceEvents;
+use Stc\Bundle\PerformanceBundle\EventListener\CreatePerformanceListener;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -12,6 +16,7 @@ use Oro\Bundle\TagBundle\Entity\TagManager;
 use Stc\Bundle\PerformanceBundle\Entity\Performance;
 use Stc\Bundle\BandBundle\Entity\Band;
 use Stc\Bundle\VenueBundle\Entity\Venue;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class PerformanceHandler
 {
@@ -24,22 +29,24 @@ class PerformanceHandler
     /** @var EntityManager */
     protected $manager;
 
-    /**
-     * @var TagManager
-     */
+    /** @var TagManager */
     protected $tagManager;
+
+    /** @var EventDispatcher */
+    protected $eventDispatcher;
 
     /**
      * @param FormInterface $form
      * @param Request       $request
      * @param EntityManager $manager
      */
-    public function __construct(FormInterface $form, Request $request, EntityManager $manager, TagManager $tagManager)
+    public function __construct(FormInterface $form, Request $request, EntityManager $manager, TagManager $tagManager, EventDispatcher $eventDispatcher)
     {
         $this->form    = $form;
         $this->request = $request;
         $this->manager = $manager;
         $this->tagManager = $tagManager;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
@@ -115,6 +122,15 @@ class PerformanceHandler
         $this->manager->flush();
 
         $this->tagManager->saveTagging($entity);
+
+        // create "performance created" event:
+        $event = new PerformanceEvent($entity);
+        // create listener for the event:
+        $listener = new CreatePerformanceListener();
+        $this->eventDispatcher->addListener('stc_performance.new_performance_created', array($listener, 'onPerformanceEvent'));
+        // dispatch the performance created event to add calendar events & reminders to the system:
+        $this->eventDispatcher->dispatch(PerformanceEvents::NEW_PERFORMANCE_CREATED, $event);
+
     }
 
     /**

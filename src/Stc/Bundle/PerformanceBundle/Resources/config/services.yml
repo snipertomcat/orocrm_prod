@@ -3,8 +3,15 @@ parameters:
     stc_performance.performance.entity.class: Stc\Bundle\PerformanceBundle\Entity\Performance
     stc_performance.form.type.performance.class: Stc\Bundle\PerformanceBundle\Form\Type\PerformanceType
     stc_performance.form.handler.class: Stc\Bundle\PerformanceBundle\Form\Handler\PerformanceHandler
+    stc_performance.entity.manager.class: Stc\Bundle\PerformanceBundle\Entity\Manager\PerformanceManager
+    stc_performance.event.handler.class: Stc\Bundle\PerformanceBundle\Event\Handler\PerformanceEventHandler
 
 services:
+    stc_performance.entity.manager:
+        class: %stc_performance.entity.manager.class%
+        arguments:
+            - @event_dispatcher
+            - @doctrine.orm.entity_manager
     stc_performance.form.type.performance:
         class: %stc_performance.form.type.performance.class%
         arguments:
@@ -19,6 +26,7 @@ services:
             - @request
             - @doctrine.orm.entity_manager
             - @oro_tag.tag.manager
+            - @event_dispatcher
     stc_performance.form:
         class: Symfony\Component\Form\Form
         factory_method: createNamed
@@ -26,3 +34,13 @@ services:
         arguments:
             - "stc_performance"
             - "stc_performance"
+    stc_performance.listener.create_performance:
+        class: Stc\Bundle\PerformanceBundle\EventListener\CreatePerformanceListener
+        arguments:
+            - @stc_performance.event.handler
+        tags:
+            - { name: doctrine.event_listener, event: stc_performance.new_performance_created }
+    stc_performance.event.handler:
+        class: %stc_performance.event.handler.class%
+    stc_performance.repository:
+        class: Stc\Bundle\PerformanceBundle\Entity\Repository\PerformanceRepository

@@ -535,7 +535,7 @@ class Performance extends ExtendPerformance implements Taggable
      * @ORM\ManyToMany(targetEntity="Stc\Bundle\BandBundle\Entity\Band")
      * @ORM\JoinTable(name="stc_performance_bands",
      *  joinColumns={@ORM\JoinColumn(name="performance_id", referencedColumnName="id")},
-     *  inverseJoinColumns={@ORM\JoinColumn(name="band_id", referencedColumnName="id", unique=true)}
+     *  inverseJoinColumns={@ORM\JoinColumn(name="band_id", referencedColumnName="id")}
      * )
      */
     protected $bands;
