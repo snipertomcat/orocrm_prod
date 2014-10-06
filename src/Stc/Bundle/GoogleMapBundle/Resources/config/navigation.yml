@@ -12,7 +12,6 @@ oro_menu_config:
             extras:
                 routes: ['stc_googlemap_*']
                 description: List of googlemaps
-                icon: icon-map-marker
     tree:
         application_menu:
             children:
