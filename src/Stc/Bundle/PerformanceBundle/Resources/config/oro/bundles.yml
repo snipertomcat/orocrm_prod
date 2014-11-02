@@ -1,2 +1,0 @@
-bundles:
-    - { name: Stc\Bundle\PerformanceBundle\StcPerformanceBundle, priority: 80 }

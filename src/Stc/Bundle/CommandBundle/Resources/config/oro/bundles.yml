@@ -1,3 +1,0 @@
-# src/Stc/Bundle/CommandBundle/Resources/config/oro/bundles.yml
-bundles:
-    - { name: Stc\Bundle\CommandBundle\StcCommandBundle, priority: 55 }

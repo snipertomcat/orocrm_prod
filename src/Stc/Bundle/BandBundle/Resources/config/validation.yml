@@ -1,8 +1,0 @@
-Stc\Bundle\BandBundle\Entity\Band:
-    properties:
-        name:
-            - NotBlank: ~
-        actType:
-            - NotBlank: ~
-        tributeto:
-            - NotBlank: ~

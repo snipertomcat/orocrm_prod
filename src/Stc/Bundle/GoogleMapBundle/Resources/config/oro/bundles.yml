@@ -1,3 +1,0 @@
-bundles:
-    - { name: Ivory\GoogleMapBundle\IvoryGoogleMapBundle, priority: 20 }
-    - { name: Stc\Bundle\GoogleMapBundle\StcGoogleMapBundle, priority: 10 }
