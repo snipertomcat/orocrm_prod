@@ -1,0 +1,7 @@
+/composer.json
+/composer.lock
+/composer.phar
+/.htaccess
+/vendor
+/error_log
+/update-entity-config.sh
